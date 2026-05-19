@@ -60,7 +60,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: ".next/*, public/*, package.json, package-lock.json, next.config.js, server.js, jsconfig.json"
+          source: ".next/*, package.json, package-lock.json, next.config.js, server.js, jsconfig.json"
           target: "/home/${{ secrets.EC2_USER }}/blog-nodejs-app"
           overwrite: true
 
