@@ -1,4 +1,4 @@
-name: Blog Node.js CI/CD Pipelines
+name: Blog Node.js CI/CD Pipeline
 
 on:
   push:
