@@ -10,32 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout source code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
+      # Install dependencies
       - name: Install Dependencies
         run: npm ci
 
+      # Build Next.js application
       - name: Build Application
         run: npm run build
 
+      # Create deployment package
       - name: Create Deployment Package
         run: |
+          rm -rf blog
           mkdir blog
 
+          # Copy required files
           cp -r .next blog/
           cp -r public blog/ || true
           cp package.json blog/
           cp package-lock.json blog/ || true
           cp next.config.js blog/ || true
 
+          # Create tar file
           tar -czvf blog.tar.gz blog
 
+      # Upload artifact
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -47,40 +56,54 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Download artifact
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
 
+      # Configure SSH key
       - name: Configure SSH Key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
           chmod 600 private_key.pem
 
+      # Copy tar file to EC2
       - name: Copy Artifact to EC2
         run: |
           scp -i private_key.pem -o StrictHostKeyChecking=no \
           blog.tar.gz ubuntu@13.235.243.90:/home/ubuntu/
 
+      # Deploy application
       - name: Deploy on Server
         run: |
           ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@13.235.243.90 << 'EOF'
-            sudo mkdir -p /home/ubuntu/apps
 
+            set -e
+
+            # Create app directory
+            mkdir -p /home/ubuntu/apps
+
+            # Go to app directory
             cd /home/ubuntu/apps
 
+            # Remove old deployment
             rm -rf blog
 
+            # Extract new package
             tar -xzvf /home/ubuntu/blog.tar.gz
 
+            # Enter project folder
             cd blog
 
+            # Install production dependencies
             npm ci --production
 
+            # Restart PM2 process
             pm2 delete blog || true
+            pm2 start npm --name blog -- start
 
-            pm2 start npm --name "blog" -- start
-
+            # Save PM2 config
             pm2 save
 
           EOF
