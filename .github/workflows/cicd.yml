@@ -64,7 +64,7 @@ jobs:
 
       - name: Deploy on Server
         run: |
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@13.235.243.90
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@13.235.243.90 << 'EOF'
             sudo mkdir -p /home/ubuntu/apps
 
             cd /home/ubuntu/apps
