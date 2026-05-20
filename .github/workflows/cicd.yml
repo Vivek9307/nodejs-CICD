@@ -65,7 +65,7 @@ jobs:
       - name: Deploy on Server
         run: |
           ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@13.235.243.90
-            mkdir -p /home/ubuntu/apps
+            sudo mkdir -p /home/ubuntu/apps
 
             cd /home/ubuntu/apps
 
