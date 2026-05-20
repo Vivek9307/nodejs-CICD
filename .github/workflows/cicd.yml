@@ -60,18 +60,18 @@ jobs:
       - name: Copy Artifact to EC2
         run: |
           scp -i private_key.pem -o StrictHostKeyChecking=no \
-          blog.tar.gz ec2-user@13.235.243.90:/home/ec2-user/
+          blog.tar.gz ubuntu@13.235.243.90:/home/ubuntu/
 
       - name: Deploy on Server
         run: |
-          ssh -i private_key.pem -o StrictHostKeyChecking=no ec2-user@13.235.243.90
-            mkdir -p /home/ec2-user/apps
+          ssh -i private_key.pem -o StrictHostKeyChecking=no ubuntu@13.235.243.90
+            mkdir -p /home/ubuntu/apps
 
-            cd /home/ec2-user/apps
+            cd /home/ubuntu/apps
 
             rm -rf blog
 
-            tar -xzvf /home/ec2-user/blog.tar.gz
+            tar -xzvf /home/ubuntu/blog.tar.gz
 
             cd blog
 
